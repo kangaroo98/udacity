@@ -5,9 +5,12 @@ Author: Oliver
 Date: 2022 - Jan5
 '''
 from config import logging
-from error import AppError, FileMissingColumnsError, FileFormatError, FileNoRowsError
-from churn_library import import_data
-
+from error import AppError, DfColumnsMismatchError, FileFormatError, FileNoRowsError, EdaError
+#from churn_library import import_data
+#from churn_library import perform_eda
+#from churn_library import encoder_helper
+#from churn_library import perform_feature_engineering
+from churn_library import *
 
 def test_import_data_filepth():
     '''
@@ -48,7 +51,7 @@ def test_import_data_missingcols():
         logging.error("TEST FAILED: Dataframe returned w/o expection")
         assert False
 
-    except FileMissingColumnsError:
+    except DfColumnsMismatchError:
         logging.info("TEST SUCCESSFUL: Columns are missing.")
         assert True
     except Exception as err:
@@ -69,3 +72,39 @@ def test_import_data_no_rows():
     except Exception as err:
         logging.error("TEST FAILED: Wrong Exception: %s", err)
         assert False
+
+def test_perform_eda_imagepth_invalid():
+    '''
+    perform_eda test
+    '''
+    try:
+        df = import_data("./../data/bank_data.csv")
+        perform_eda(df, "blabla")
+        logging.error("TEST FAILED: eda performed w/o expection")
+        assert False
+    except AssertionError:
+        logging.info("TEST SUCCESSFUL: pth not available, process failed.")
+        assert True
+    except Exception as err:
+        logging.error("TEST FAILED: Wrong Exception: %s", err)
+        assert False
+
+def test_encoder_helper_dfparameter():
+    '''
+    encoder_helper test
+    '''
+    try:
+        df = import_data("blabla")
+        perform_eda(df, "blabla")
+        encoder_helper(df, category_columns, "blabla")
+        logging.error("TEST FAILED: Enoder returned w/o assertion")
+        assert False
+    except AssertionError as err:
+        logging.info("TEST SUCCESSFUL: Parameter not valid.")
+        assert True
+    except Exception as err:
+        logging.error("TEST FAILED: Wrong Exception: %s", err)
+        assert False
+
+def perform_feature_engineering_test():
+    pass

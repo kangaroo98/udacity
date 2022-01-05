@@ -4,10 +4,10 @@ library to determine customer churn based on two models:
 - RandomForestClassifier
 
 Functions:
-- import_data(pth):
-- perform_eda(df_eda):
-- encoder_helper(df_encode, category_lst, rel_column):
-- perform_feature_engineering(df_org, feature_name_list, target_column_name):
+- import_data(pth)
+- perform_eda(df_eda, pth)
+- encoder_helper(df_encode, category_lst, rel_column)
+- perform_feature_engineering(df_org, feature_name_list, target_column_name)
 - compare_lr_rf_model(
         target_test,
         features_test,
@@ -38,15 +38,21 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from app.error import AppError, FileMissingColumnsError, FileFormatError, FileNoRowsError
+from app.error import AppError, DfColumnsMismatchError
+from app.error import FileFormatError, FileNoRowsError, EdaError, EncodingError
 from app.config import features, target, param_grid, category_columns, quantitative_columns
 from app.config import logging
 sns.set()
 
+
 def import_data(pth):
     '''
     returns dataframe for the csv found at pth
-
+    exceptions:
+            FileFormatError: Incorrect file format - cannot read csv
+            FileNoRowsError: No rows in the dataset
+            FileMissingColumnsError: predefined columns are missing
+                (see config.py - quantitative_columns, category_columns)
     input:
             pth: a path to the csv
     output:
@@ -55,11 +61,13 @@ def import_data(pth):
     # Import the csv data
     logging.info("INFO: Importing file: (%s)", pth)
     assert os.path.exists(pth)
+
     try:
         df_csv = pd.read_csv(pth)
     except Exception as err:
         logging.error("ERROR: File could not be read: %s", err)
-        raise FileFormatError("ERROR: File could not be read: %s", err) from err
+        raise FileFormatError("ERROR: File could not be read: %s", 
+            err) from err
 
     # Validate the imported data for further processing
     if df_csv.shape[0] <= 1:
@@ -76,65 +84,85 @@ def import_data(pth):
             category_columns)
         logging.error(
             "ERROR: Imported columns do NOT match. Further processing not possible.")
-        raise FileMissingColumnsError("File corrupted. Missing Columns.")
+        raise DfColumnsMismatchError(
+            "File corrupted. Missing Columns. Please refer to mandatory columns \
+                defined in config.py (quantitative_columns, category_columns)")
 
     logging.info(
         "SUCCESS: File imported, dataframe created containing %s rows.",
         df_csv.shape[0])
     return df_csv
 
-def perform_eda(df_eda):
+
+def perform_eda(df_eda, pth):
     '''
     perform eda on df and save figures to images folder
-    input:
-            df: pandas dataframe
 
+    exceptions:
+            EdaError: eda re. image(s) creation failed.
+    input:
+            df_eda: pandas dataframe - initialized by import_data function
+            pth: root images path
     output:
             None
     '''
+    logging.info("INFO: perfroming eda: (%s)", pth)
+    assert os.path.exists(pth)
+
     try:
         df_eda['Churn'] = df_eda['Attrition_Flag'].apply(
             lambda val: 0 if val == "Existing Customer" else 1)
 
         plt.figure(figsize=(20, 10))
         df_eda['Churn'].hist()
-        plt.savefig("./../images/churn.png")
+        plt.savefig(pth + "churn.png")
 
         plt.figure(figsize=(20, 10))
         df_eda['Customer_Age'].hist()
-        plt.savefig("./../images/customer_age.png")
+        plt.savefig(pth + "customer_age.png")
 
         plt.figure(figsize=(20, 10))
         df_eda.Marital_Status.value_counts('normalize').plot(kind='bar')
-        plt.savefig("./../images/material_status.png")
+        plt.savefig(pth + "status.png")
 
         plt.figure(figsize=(20, 10))
         sns.distplot(df_eda['Total_Trans_Ct'])
-        plt.savefig("./../images/total_trans_ct.png")
+        plt.savefig(pth + "total_trans_ct.png")
 
         plt.figure(figsize=(20, 10))
         sns.heatmap(df_eda.corr(), annot=False, cmap='Dark2_r', linewidths=2)
-        plt.savefig("./../images/heatmap.png")
+        plt.savefig(pth + "heatmap.png")
+
+        logging.info("SUCCESS: Images are created in %s.", pth)
 
     except Exception as err:
         logging.error(
-            "ERROR: Visualization failed. Images could not be created:", err)
-        raise AppError(
-            "Visualization failed. Images could not be created.") from err
+            "ERROR: Visualization failed. Image(s) could not be created:", err)
+        raise EdaError(
+            "Visualization failed. Image(s) could not be created.") from err
+
 
 def encoder_helper(df_encode, category_lst, rel_column):
     '''
     helper function to turn each categorical column into a new column with
     propotion of churn for each category - associated with cell 15 from the notebook
-
+    exceptions:
+            EncodingError: processing error
     input:
-            df: pandas dataframe
-            category_lst: list of columns that contain categorical features
+            df_encode: pandas dataframe - \
+                initialized by import_data function followed by perform_eda function
+            category_lst: list of columns that contain categorical features \
+                (must be part of df_encode)
             rel_column: related column
-            [optional argument that could be used for naming variables or index y column]
     output:
-            df: pandas dataframe with new columns for
+            df_encode: pandas dataframe with new columns for
     '''
+    logging.info(
+        "INFO: encoding category list: %s with related column: %s",
+        category_lst,
+        rel_column)
+    assert set(category_lst + [rel_column]).issubset(set(df_encode.columns))
+
     try:
         # encoding category columns
         for category in category_lst:
@@ -153,7 +181,8 @@ def encoder_helper(df_encode, category_lst, rel_column):
 
     except Exception as err:
         logging.error("ERROR: Encoding failed:", err)
-        raise AppError("Encoding the categories failed.") from err
+        raise EncodingError("Encoding the categories failed.") from err
+
 
 def perform_feature_engineering(df_org, feature_name_list, target_column_name):
     '''
@@ -184,6 +213,7 @@ def perform_feature_engineering(df_org, feature_name_list, target_column_name):
     except Exception as err:
         logging.error("ERROR: Feature engineering failed:", err)
         raise AppError("Feature engineering failed.") from err
+
 
 def compare_lr_rf_model(
         target_test,
@@ -220,6 +250,7 @@ def compare_lr_rf_model(
     except Exception as err:
         logging.error("ERROR: Comparison lr vs rf model failed:", err)
         raise AppError("Comparison lr vs rf model failed.") from err
+
 
 def feature_importance_plot(model, feature_data, output_pth):
     '''
@@ -259,6 +290,7 @@ def feature_importance_plot(model, feature_data, output_pth):
     except Exception as err:
         logging.error("ERROR: Feature importance plot failed:", err)
         raise AppError("Feature importance plot failed.") from err
+
 
 def classification_report_image(model_name,
                                 target_train,
@@ -307,6 +339,7 @@ def classification_report_image(model_name,
             "ERROR: Classification report image generation failed:", err)
         raise AppError(
             "Classification report image generation failed.") from err
+
 
 def train_models(train_features, test_features, train_target, test_target):
     '''
@@ -380,12 +413,12 @@ if __name__ == "__main__":
     try:
         # preparation and analysis
         df = import_data("./../data/bank_data.csv")
-        perform_eda(df)
+        perform_eda(df, "./../images/")
+        encoder_helper(df, category_columns, target)
 
-        # # feature extractin and model training
-        # encoder_helper(df, category_columns, target)
-        # X_train, X_test, y_train, y_test = perform_feature_engineering(
-        #     df, features, target)
+        # feature extraction and model training
+        X_train, X_test, y_train, y_test = perform_feature_engineering(
+            df, features, target)
         # train_models(X_train, X_test, y_train, y_test)
 
         # compare_lr_rf_model(
