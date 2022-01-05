@@ -1,18 +1,30 @@
 '''
-churn library with two alternative models to determine customer churn:
+library to determine customer churn based on two models:
 - LogisiticRegression
 - RandomForestClassifier
+
+Functions:
+- import_data(pth):
+- perform_eda(df_eda):
+- encoder_helper(df_encode, category_lst, rel_column):
+- perform_feature_engineering(df_org, feature_name_list, target_column_name):
+- compare_lr_rf_model(
+        target_test,
+        features_test,
+        rfc_model_name,
+        lr_model_name)
+- feature_importance_plot(model, feature_data, output_pth)
+- classification_report_image(model_name,
+                                target_train,
+                                target_test,
+                                train_preds,
+                                test_preds):
+- train_models(train_features, test_features, train_target, test_target)
+
 Author: Oliver
-Date: Jan 5 - 2022
+Date: 2022 - Jan5
 '''
 # import libraries
-from app.error import *
-from app.config import features
-from app.config import target
-from app.config import param_grid
-from app.config import category_columns
-from app.config import quantitative_columns
-from app.config import logging
 import os
 from sklearn.metrics import plot_roc_curve, classification_report
 from sklearn.model_selection import GridSearchCV
@@ -26,8 +38,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from app.error import AppError, FileMissingColumnsError, FileFormatError, FileNoRowsError
+from app.config import features, target, param_grid, category_columns, quantitative_columns
+from app.config import logging
 sns.set()
-
 
 def import_data(pth):
     '''
@@ -41,14 +55,18 @@ def import_data(pth):
     # Import the csv data
     logging.info("INFO: Importing file: (%s)", pth)
     assert os.path.exists(pth)
-    df_csv = pd.read_csv(pth)
+    try:
+        df_csv = pd.read_csv(pth)
+    except Exception as err:
+        logging.error("ERROR: File could not be read: %s", err)
+        raise FileFormatError("ERROR: File could not be read: %s", err) from err
 
     # Validate the imported data for further processing
     if df_csv.shape[0] <= 1:
         logging.info("INFO: Test data imported. Rows: %s ",
                      df_csv.shape[0])
-        logging.info("ERROR: File contains no data to train.")
-        raise CSV_NoRowsError("File contains no training data")
+        logging.error("ERROR: File contains no data to train.")
+        raise FileNoRowsError("File contains no training data")
     if not set(quantitative_columns +
                category_columns).issubset(set(df_csv.columns)):
         logging.info("INFO: Imported column names: %s", df_csv.columns)
@@ -56,15 +74,14 @@ def import_data(pth):
             "INFO: Column names expected: %s",
             quantitative_columns +
             category_columns)
-        logging.info(
+        logging.error(
             "ERROR: Imported columns do NOT match. Further processing not possible.")
-        raise CSV_MissingColumnsError("File corrupted. Missing Columns.")
+        raise FileMissingColumnsError("File corrupted. Missing Columns.")
 
     logging.info(
         "SUCCESS: File imported, dataframe created containing %s rows.",
         df_csv.shape[0])
     return df_csv
-
 
 def perform_eda(df_eda):
     '''
@@ -105,7 +122,6 @@ def perform_eda(df_eda):
         raise AppError(
             "Visualization failed. Images could not be created.") from err
 
-
 def encoder_helper(df_encode, category_lst, rel_column):
     '''
     helper function to turn each categorical column into a new column with
@@ -139,7 +155,6 @@ def encoder_helper(df_encode, category_lst, rel_column):
         logging.error("ERROR: Encoding failed:", err)
         raise AppError("Encoding the categories failed.") from err
 
-
 def perform_feature_engineering(df_org, feature_name_list, target_column_name):
     '''
     input:
@@ -169,7 +184,6 @@ def perform_feature_engineering(df_org, feature_name_list, target_column_name):
     except Exception as err:
         logging.error("ERROR: Feature engineering failed:", err)
         raise AppError("Feature engineering failed.") from err
-
 
 def compare_lr_rf_model(
         target_test,
@@ -206,7 +220,6 @@ def compare_lr_rf_model(
     except Exception as err:
         logging.error("ERROR: Comparison lr vs rf model failed:", err)
         raise AppError("Comparison lr vs rf model failed.") from err
-
 
 def feature_importance_plot(model, feature_data, output_pth):
     '''
@@ -246,7 +259,6 @@ def feature_importance_plot(model, feature_data, output_pth):
     except Exception as err:
         logging.error("ERROR: Feature importance plot failed:", err)
         raise AppError("Feature importance plot failed.") from err
-
 
 def classification_report_image(model_name,
                                 target_train,
@@ -295,7 +307,6 @@ def classification_report_image(model_name,
             "ERROR: Classification report image generation failed:", err)
         raise AppError(
             "Classification report image generation failed.") from err
-
 
 def train_models(train_features, test_features, train_target, test_target):
     '''
@@ -368,11 +379,8 @@ if __name__ == "__main__":
 
     try:
         # preparation and analysis
-        #df = import_data("./../data/bank_data.csv")
-        # df = import_data("blabla") # test
-        df = import_data("./../data/err_missing_columns.csv")  # test
-        # df = import_data("./../data/err_wrong_file_format.csv") # test
-        # perform_eda(df)
+        df = import_data("./../data/bank_data.csv")
+        perform_eda(df)
 
         # # feature extractin and model training
         # encoder_helper(df, category_columns, target)

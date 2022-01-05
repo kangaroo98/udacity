@@ -3,14 +3,14 @@ class AppError(Exception):
     """Base class for other exceptions"""
     pass
 
-class CSV_WrongFileTypeError(AppError):
+class FileFormatError(AppError):
     """Base class for other exceptions"""
     pass
 
-class CSV_MissingColumnsError(AppError):
+class FileMissingColumnsError(AppError):
     """Base class for other exceptions"""
     pass
 
-class CSV_NoRowsError(AppError):
+class FileNoRowsError(AppError):
     """Base class for other exceptions"""
     pass
