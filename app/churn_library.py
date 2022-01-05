@@ -6,6 +6,13 @@ Author: Oliver
 Date: Jan 5 - 2022
 '''
 # import libraries
+from app.error import *
+from app.config import features
+from app.config import target
+from app.config import param_grid
+from app.config import category_columns
+from app.config import quantitative_columns
+from app.config import logging
 import os
 from sklearn.metrics import plot_roc_curve, classification_report
 from sklearn.model_selection import GridSearchCV
@@ -20,13 +27,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
-from app.utils import logging
-from app.utils import quantitative_columns
-from app.utils import category_columns
-from app.utils import param_grid
-from app.utils import target
-from app.utils import features
-from app.utils import AppError
 
 
 def import_data(pth):
@@ -38,44 +38,32 @@ def import_data(pth):
     output:
             df: pandas dataframe
     '''
-    try:
-        # Import the csv data
-        logging.info("Importing file: (%s)", pth)
-        assert os.path.exists(pth)
-        df_csv = pd.read_csv(pth)
+    # Import the csv data
+    logging.info("INFO: Importing file: (%s)", pth)
+    assert os.path.exists(pth)
+    df_csv = pd.read_csv(pth)
 
-        # Validate the imported data for further processing
-        if df_csv.shape[0] <= 0:
-            logging.info(
-                "INFO: Test data imported. Rows: %s ",
-                df_csv.shape[0])
-            logging.info("ERROR: File contains no data to train.")
-            raise AppError("File contains no training data")
-        if not set(quantitative_columns +
-                   category_columns).issubset(set(df_csv.columns)):
-            logging.info("INFO: Imported column names: %s", df_csv.columns)
-            logging.info(
-                "INFO: Column names expected: %s",
-                quantitative_columns +
-                category_columns)
-            logging.info(
-                "ERROR: Imported columns do NOT match. Further processing not possible.")
-            raise AppError("File corrupted. Wrong data format.")
-
+    # Validate the imported data for further processing
+    if df_csv.shape[0] <= 1:
+        logging.info("INFO: Test data imported. Rows: %s ",
+                     df_csv.shape[0])
+        logging.info("ERROR: File contains no data to train.")
+        raise CSV_NoRowsError("File contains no training data")
+    if not set(quantitative_columns +
+               category_columns).issubset(set(df_csv.columns)):
+        logging.info("INFO: Imported column names: %s", df_csv.columns)
         logging.info(
-            "SUCCESS: File imported, dataframe created containing %s rows.",
-            df_csv.shape[0])
-        return df_csv
+            "INFO: Column names expected: %s",
+            quantitative_columns +
+            category_columns)
+        logging.info(
+            "ERROR: Imported columns do NOT match. Further processing not possible.")
+        raise CSV_MissingColumnsError("File corrupted. Missing Columns.")
 
-    except AssertionError as err:
-        logging.error(
-            "ERROR: Filepath does not exist. Further processing not possible.")
-        raise AppError("Filepath does not exist.") from err
-    except Exception as err:
-        logging.error(
-            "ERROR: File could not be read. Further processing not possible: %s",
-            err)
-        raise AppError("Data import failed.") from err
+    logging.info(
+        "SUCCESS: File imported, dataframe created containing %s rows.",
+        df_csv.shape[0])
+    return df_csv
 
 
 def perform_eda(df_eda):
@@ -381,9 +369,9 @@ if __name__ == "__main__":
     try:
         # preparation and analysis
         #df = import_data("./../data/bank_data.csv")
-        #df = import_data("blabla") # test
-        df = import_data("./../data/err_missing_columns.csv") # test
-        #df = import_data("./../data/err_wrong_file_format.csv") # test
+        # df = import_data("blabla") # test
+        df = import_data("./../data/err_missing_columns.csv")  # test
+        # df = import_data("./../data/err_wrong_file_format.csv") # test
         # perform_eda(df)
 
         # # feature extractin and model training
