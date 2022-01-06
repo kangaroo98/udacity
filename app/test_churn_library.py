@@ -4,124 +4,254 @@ Pytests for the churn library functions
 Author: Oliver
 Date: 2022 - Jan5
 '''
+import joblib
 from config import logging
-from app.error import AppError, DfColumnsMismatchError
-from app.error import FileFormatError, FileNoRowsError, EdaError
-from app.error import EncodingError, FeatureEngineeringError
-#from churn_library import import_data
-#from churn_library import perform_eda
-#from churn_library import encoder_helper
-#from churn_library import perform_feature_engineering
-from churn_library import *
+from config import category_columns, features, target
+from app.error import AppError
+from app.error import DfColumnsMismatchError, FileFormatError, FileNoRowsError
+from churn_library import import_data
+from churn_library import perform_eda
+from churn_library import encoder_helper
+from churn_library import perform_feature_engineering
+from churn_library import train_models
+from churn_library import classification_report_image
+
+#from churn_library import feature_importance_image
+#from churn_library import compare_roc_image
+#from churn_library import *
+
 
 def test_import_data_filepth():
     '''
     import_data test
     '''
     try:
-        df = import_data("blabla")
+        import_data("blabla")
         logging.error("TEST FAILED: Dataframe returned w/o expection")
         assert False
-    except AssertionError as err:
+    except AssertionError:
         logging.info("TEST SUCCESSFUL: Filepath does not exist.")
         assert True
-    except Exception as err:
+    except (AppError) as err:
         logging.error("TEST FAILED: Wrong Exception: %s", err)
         assert False
+
 
 def test_import_data_fileformat():
     '''
     import_data test
     '''
     try:
-        df = import_data("./../data/err_wrong_file_format.csv")
+        import_data("./../data/err_wrong_file_format.csv")
         logging.error("TEST FAILED: Dataframe returned w/o expection")
         assert False
     except FileFormatError as err:
         logging.info("TEST SUCCESSFUL: Filepath does not exist: %s", err)
         assert True
-    except Exception as err:
+    except AppError as err:
         logging.error("TEST FAILED: Wrong Exception: %s", err)
         assert False
+
 
 def test_import_data_missingcols():
     '''
     import_data test
     '''
     try:
-        df = import_data("./../data/err_missing_columns.csv")
+        import_data("./../data/err_missing_columns.csv")
         logging.error("TEST FAILED: Dataframe returned w/o expection")
         assert False
 
     except DfColumnsMismatchError:
         logging.info("TEST SUCCESSFUL: Columns are missing.")
         assert True
-    except Exception as err:
+    except AppError as err:
         logging.error("TEST FAILED: Wrong Exception: %s", err)
         assert False
+
 
 def test_import_data_no_rows():
     '''
     import_data test
     '''
     try:
-        df = import_data("./../data/err_no_rows.csv")
+        import_data("./../data/err_no_rows.csv")
         logging.error("TEST FAILED: Dataframe returned w/o expection")
         assert False
     except FileNoRowsError:
         logging.info("TEST SUCCESSFUL: No rows in file.")
         assert True
-    except Exception as err:
+    except AppError as err:
         logging.error("TEST FAILED: Wrong Exception: %s", err)
         assert False
+
 
 def test_perform_eda_imagepth_invalid():
     '''
     perform_eda test
     '''
     try:
-        df = import_data("./../data/bank_data.csv")
-        perform_eda(df, "blabla")
+        df_eda = import_data("./../data/bank_data.csv")
+        perform_eda(df_eda, "blabla")
         logging.error("TEST FAILED: eda performed w/o expection")
         assert False
     except AssertionError:
         logging.info("TEST SUCCESSFUL: pth not available, process failed.")
         assert True
-    except Exception as err:
+    except AppError as err:
         logging.error("TEST FAILED: Wrong Exception: %s", err)
         assert False
+
 
 def test_encoder_helper_dfparameter():
     '''
     encoder_helper test
     '''
     try:
-        df = import_data("./../data/bank_data.csv")
-        perform_eda(df, "./../images/")
-        encoder_helper(df, category_columns, "blabla")
+        df_encode = import_data("./../data/bank_data.csv")
+        perform_eda(df_encode, "./../images/")
+        encoder_helper(df_encode, category_columns, "blabla")
         logging.error("TEST FAILED: Enoder returned w/o assertion")
         assert False
     except AssertionError as err:
         logging.info("TEST SUCCESSFUL: Parameter not valid.")
         assert True
-    except Exception as err:
+    except AppError as err:
         logging.error("TEST FAILED: Wrong Exception: %s", err)
         assert False
 
-def perform_feature_engineering_test():
+
+def test_perform_feature_engineering_path():
     '''
     perform_feature_engineering test
     '''
     try:
-        df = import_data("./../data/bank_data.csv")
-        perform_eda(df, "./../images/")
-        encoder_helper(df, category_columns, target)
-        perform_feature_engineering(df, features, "blabla")
+        df_engineering = import_data("./../data/bank_data.csv")
+        perform_eda(df_engineering, "./../images/")
+        encoder_helper(df_engineering, category_columns, target)
+        perform_feature_engineering(df_engineering, features, "blabla")
         logging.error("TEST FAILED: Enoder returned w/o assertion")
         assert False
     except AssertionError as err:
         logging.info("TEST SUCCESSFUL: Parameter not valid.")
         assert True
-    except Exception as err:
+    except AppError as err:
         logging.error("TEST FAILED: Wrong Exception: %s", err)
         assert False
+
+
+def test_train_models_feature_target_data_match():
+    '''
+    train_models test
+    '''
+    try:
+        df_train = import_data("./../data/bank_data.csv")
+        perform_eda(df_train, "./../images/")
+        encoder_helper(df_train, category_columns, target)
+        x_train, x_test, y_train, y_test = perform_feature_engineering(
+            df_train, features, target)
+        train_models(x_train, x_test, y_test, y_train)
+        logging.error("TEST FAILED: Enoder returned w/o assertion")
+        assert False
+    except AssertionError as err:
+        logging.info("TEST SUCCESSFUL: Parameter not valid.")
+        assert True
+    except AppError as err:
+        logging.error("TEST FAILED: Wrong Exception: %s", err)
+        assert False
+
+
+def test_classification_report_image_path1():
+    '''
+    classification_report_image test
+    '''
+    # preparation and analysis
+    try:
+        df_class = import_data('./../data/bank_data.csv')
+        perform_eda(df_class, './../images/')
+        encoder_helper(df_class, category_columns, target)
+
+        # feature extraction and model training
+        x_train, x_test, y_train, y_test = perform_feature_engineering(
+            df_class, features, target)
+
+        # classification report
+        classification_report_image(
+            joblib.load('./../models/lr_model.pkl'),
+            x_train, x_test, y_train, y_test,
+            './../images/classification_report_lr.img')
+
+        logging.error("TEST FAILED: classification returned w/o assertion")
+        assert False
+    except AssertionError as err:
+        logging.info("TEST SUCCESSFUL: Parameter not valid.")
+        assert True
+    except AppError as err:
+        logging.error("TEST FAILED: Wrong Exception: %s", err)
+        assert False
+
+
+def test_classification_report_image_path2():
+    '''
+    classification_report_image test
+    '''
+    # preparation and analysis
+    try:
+        df_class = import_data('./../data/bank_data.csv')
+        perform_eda(df_class, './../images/')
+        encoder_helper(df_class, category_columns, target)
+
+        # feature extraction and model training
+        x_train, x_test, y_train, y_test = perform_feature_engineering(
+            df_class, features, target)
+
+        # classification report
+        classification_report_image(
+            joblib.load('./../models/lr_model.pkl'),
+            x_train, x_test, y_train, y_test,
+            'classification_report_lr.png')
+
+        logging.error("TEST FAILED: classification returned w/o assertion")
+        assert False
+    except AssertionError as err:
+        logging.info("TEST SUCCESSFUL: Parameter not valid.")
+        assert True
+    except AppError as err:
+        logging.error("TEST FAILED: Wrong Exception: %s", err)
+        assert False
+
+
+def test_classification_report_image_path3():
+    '''
+    classification_report_image test
+    '''
+    # preparation and analysis
+    try:
+        df_class = import_data('./../data/bank_data.csv')
+        perform_eda(df_class, './../images/')
+        encoder_helper(df_class, category_columns, target)
+
+        # feature extraction and model training
+        x_train, x_test, y_train, y_test = perform_feature_engineering(
+            df_class, features, target)
+
+        # classification report
+        classification_report_image(
+            joblib.load('./../models/lr_model.pkl'),
+            x_train, x_test, y_train, y_test,
+            'blabla')
+
+        logging.error("TEST FAILED: classification returned w/o assertion")
+        assert False
+    except AssertionError as err:
+        logging.info("TEST SUCCESSFUL: Parameter not valid.")
+        assert True
+    except AppError as err:
+        logging.error("TEST FAILED: Wrong Exception: %s", err)
+        assert False
+
+# def test_feature_importance_image_1():
+#     pass
+
+# def test_compare_roc_image_1():
+#     pass

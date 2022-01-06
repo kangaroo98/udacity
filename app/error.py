@@ -26,3 +26,11 @@ class EncodingError(AppError):
 class FeatureEngineeringError(AppError):
     """Base class for other exceptions"""
     pass
+
+class ModelTrainingError(AppError):
+    """Base class for other exceptions"""
+    pass
+
+class ReportingError(AppError):
+    """Base class for other exceptions"""
+    pass

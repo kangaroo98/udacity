@@ -26,7 +26,7 @@ Date: 2022 - Jan5
 '''
 # import libraries
 import os
-from sklearn.metrics import plot_roc_curve, classification_report
+from sklearn.metrics import classification_report, RocCurveDisplay
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -38,9 +38,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from app.error import AppError
 from app.error import DfColumnsMismatchError, FileFormatError, FileNoRowsError
 from app.error import EdaError, EncodingError, FeatureEngineeringError
+from app.error import ModelTrainingError, ReportingError
 from app.config import features, target, param_grid, category_columns, quantitative_columns
 from app.config import logging
 sns.set()
@@ -52,7 +52,7 @@ def import_data(filename):
     exceptions:
             FileFormatError: Incorrect file format - cannot read csv
             FileNoRowsError: No rows in the dataset
-            FileMissingColumnsError: predefined columns are missing
+            DfColumnsMismatchError: predefined columns are missing
                 (see config.py - quantitative_columns, category_columns)
     input:
             filename: str - path to the csv
@@ -67,8 +67,7 @@ def import_data(filename):
         df_csv = pd.read_csv(filename)
     except Exception as err:
         logging.error("ERROR: File could not be read: %s", err)
-        raise FileFormatError("ERROR: File could not be read: %s",
-                              err) from err
+        raise FileFormatError("ERROR: File could not be read: ",err) from err
 
     # Validate the imported data for further processing
     if df_csv.shape[0] <= 1:
@@ -121,28 +120,28 @@ def perform_eda(df_eda, image_dir_pth):
         plt.savefig(image_dir_pth + "churn.png")
         logging.info("INFO: churn.png image is created in %s", image_dir_pth)
 
-        plt.figure(figsize=(20, 10))
+        plt.clf()
         df_eda['Customer_Age'].hist()
         plt.savefig(image_dir_pth + "customer_age.png")
         logging.info(
             "INFO: customer_age.png image is created in %s",
             image_dir_pth)
 
-        plt.figure(figsize=(20, 10))
+        plt.clf()
         df_eda.Marital_Status.value_counts('normalize').plot(kind='bar')
         plt.savefig(image_dir_pth + "marital_status.png")
         logging.info(
             "INFO: marital_status.png image is created in %s",
             image_dir_pth)
 
-        plt.figure(figsize=(20, 10))
-        sns.distplot(df_eda['Total_Trans_Ct'])
+        plt.clf()
+        sns.histplot(df_eda['Total_Trans_Ct'], kde=True, stat="density", linewidth=0)
         plt.savefig(image_dir_pth + "total_trans_ct.png")
         logging.info(
             "INFO: total_trans_ct.png image is created in %s",
             image_dir_pth)
 
-        plt.figure(figsize=(40, 20))
+        plt.clf()
         sns.heatmap(df_eda.corr(), annot=False, cmap='Dark2_r', linewidths=2)
         plt.savefig(image_dir_pth + "corr_heatmap.png")
         logging.info(
@@ -158,6 +157,8 @@ def perform_eda(df_eda, image_dir_pth):
             "ERROR: Visualization failed. Image(s) could not be created:", err)
         raise EdaError(
             "Visualization failed. Image(s) could not be created.") from err
+    finally:
+        plt.close()
 
 
 def encoder_helper(df_encode, category_lst, rel_column):
@@ -243,7 +244,7 @@ def perform_feature_engineering(df_org, feature_name_list, target_column_name):
         raise FeatureEngineeringError("Feature engineering failed.") from err
 
 
-def compare_lr_rf_model_image(
+def compare_roc_image(
         lr_model,
         rf_model,
         features_test,
@@ -253,7 +254,7 @@ def compare_lr_rf_model_image(
     plotting a comparison of lr and rf and save image in image_file_pth
 
     exceptions:
-        AppError
+        ReportingError
     input:
         lr_model: logistic regression model
         rf_model: rain forest model
@@ -269,32 +270,35 @@ def compare_lr_rf_model_image(
     assert image_name[-4:] == '.png'
 
     try:
-        # rf_model = joblib.load(rfc_model_name)
-        # lr_model = joblib.load(lr_model_name)
-
-        lrc_plot = plot_roc_curve(lr_model, features_test, target_test)
-        plt.figure(figsize=(15, 8))
-        ax = plt.gca()
-        rfc_disp = plot_roc_curve(
-            rf_model,
+        plt.figure(figsize=(20, 10))
+        axes = plt.gca()
+        RocCurveDisplay.from_estimator(
+            lr_model,
             features_test,
             target_test,
-            ax=ax,
+            ax=axes,
             alpha=0.8)
-        lrc_plot.plot(ax=ax, alpha=0.8)
+        RocCurveDisplay.from_estimator(
+             rf_model,
+             features_test,
+             target_test,
+             ax=axes,
+             alpha=0.8)
         plt.savefig(image_file_pth)
 
     except Exception as err:
-        logging.error("ERROR: Comparison lr vs rf model failed:", err)
-        raise AppError("Comparison lr vs rf model failed.") from err
+        logging.error("ERROR: Comparison roc failed:", err)
+        raise ReportingError("Comparison roc failed.") from err
+    finally:
+        plt.close()
 
 
-def feature_importance_plot(rf_model, feature_data, image_file_pth):
+def feature_importance_image(rf_model, feature_data, image_file_pth):
     '''
     creates and stores the feature importance plot as image_file_pth
 
     exceptions:
-            AppError
+            ReportingError
     input:
             rf_model: rf model object containing feature_importances_
             feature_data: pandas dataframe of feature values
@@ -335,7 +339,9 @@ def feature_importance_plot(rf_model, feature_data, image_file_pth):
 
     except Exception as err:
         logging.error("ERROR: Feature importance plot failed:", err)
-        raise AppError("Feature importance plot failed.") from err
+        raise ReportingError("Feature importance plot failed.") from err
+    finally:
+        plt.close()
 
 
 def classification_report_image(
@@ -350,7 +356,7 @@ def classification_report_image(
     and stores report as image_file_path
 
     exceptions:
-        AppError
+        ReportingError
     input:
         model
         train_features: features train data
@@ -370,23 +376,21 @@ def classification_report_image(
         preds_train = model.predict(train_features)
         preds_test = model.predict(test_features)
 
-        plt.figure(figsize=(20, 5))
+        plt.figure(figsize=(10, 10))
         plt.rc('figure', figsize=(5, 5))
-        plt.text(0.01, 1.25, str(image_name[:-4] + " Test"),
+        plt.text(0.01, 1, str(image_name[:-4] + " Train"),
                  {'fontsize': 10}, fontproperties='monospace')
-        # approach improved by OP -> monospace!
-        plt.text(
-            0.01, 0.05, str(
-                classification_report(
-                    test_target, preds_test)), {
-                'fontsize': 10}, fontproperties='monospace')
-        plt.text(0.01, 0.6, str(image_name[:-4] + " Train"),
-                 {'fontsize': 10}, fontproperties='monospace')
-        # approach improved by OP -> monospace!
         plt.text(
             0.01, 0.7, str(
                 classification_report(
                     train_target, preds_train)), {
+                'fontsize': 10}, fontproperties='monospace')
+        plt.text(0.01, 0.6, str(image_name[:-4] + " Test"),
+                 {'fontsize': 10}, fontproperties='monospace')
+        plt.text(
+            0.01, 0.3, str(
+                classification_report(
+                    test_target, preds_test)), {
                 'fontsize': 10}, fontproperties='monospace')
         plt.axis('off')
 
@@ -396,15 +400,17 @@ def classification_report_image(
     except Exception as err:
         logging.error(
             "ERROR: Classification report image generation failed:", err)
-        raise AppError(
+        raise ReportingError(
             "Classification report image generation failed.") from err
+    finally:
+        plt.close()
 
 
 def train_models(train_features, test_features, train_target, test_target):
     '''
     train, store model results: images + scores, and store models
     exception:
-            AppError
+            ModelTrainingError
     input:
             train_features: X training data
             test_features: X testing data
@@ -414,6 +420,10 @@ def train_models(train_features, test_features, train_target, test_target):
             models: lrc, rfc
     '''
     logging.info("INFO: training models")
+    assert train_features.shape[0] > 1
+    assert test_features.shape[0] > 1
+    assert train_features.shape[0] == train_target.shape[0]
+    assert test_features.shape[0] == test_target.shape[0]
 
     try:
         # grid search
@@ -447,7 +457,7 @@ def train_models(train_features, test_features, train_target, test_target):
 
     except Exception as err:
         logging.error("ERROR: Training failed:", err)
-        raise AppError("Training failed.") from err
+        raise ModelTrainingError("Training failed.") from err
 
 
 if __name__ == "__main__":
@@ -461,6 +471,7 @@ if __name__ == "__main__":
         # feature extraction and model training
         X_train, X_test, y_train, y_test = perform_feature_engineering(
             df, features, target)
+
         # lr, rf = train_models(X_train, X_test, y_train, y_test)
         # joblib.dump(lr, './../models/lr_model.pkl')
         # joblib.dump(rf, './../models/rf_model.pkl')
@@ -476,16 +487,16 @@ if __name__ == "__main__":
             X_train, X_test, y_train, y_test,
             './../images/classification_report_rf.png')
 
-        feature_importance_plot(
+        feature_importance_image(
             joblib.load('./../models/rf_model.pkl'),
             X_test,
             './../images/feature_importance.png')
 
-        compare_lr_rf_model_image(
+        compare_roc_image(
             joblib.load('./../models/lr_model.pkl'),
             joblib.load('./../models/rf_model.pkl'),
             X_test, y_test,
-            './../images/classification_report_comparison.png')
+            './../images/roc_curve_comparison.png')
 
     except Exception as error:
         print("Library error: %s", error)
