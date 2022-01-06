@@ -5,7 +5,9 @@ Author: Oliver
 Date: 2022 - Jan5
 '''
 from config import logging
-from error import AppError, DfColumnsMismatchError, FileFormatError, FileNoRowsError, EdaError
+from app.error import AppError, DfColumnsMismatchError
+from app.error import FileFormatError, FileNoRowsError, EdaError
+from app.error import EncodingError, FeatureEngineeringError
 #from churn_library import import_data
 #from churn_library import perform_eda
 #from churn_library import encoder_helper
@@ -94,8 +96,8 @@ def test_encoder_helper_dfparameter():
     encoder_helper test
     '''
     try:
-        df = import_data("blabla")
-        perform_eda(df, "blabla")
+        df = import_data("./../data/bank_data.csv")
+        perform_eda(df, "./../images/")
         encoder_helper(df, category_columns, "blabla")
         logging.error("TEST FAILED: Enoder returned w/o assertion")
         assert False
@@ -107,4 +109,19 @@ def test_encoder_helper_dfparameter():
         assert False
 
 def perform_feature_engineering_test():
-    pass
+    '''
+    perform_feature_engineering test
+    '''
+    try:
+        df = import_data("./../data/bank_data.csv")
+        perform_eda(df, "./../images/")
+        encoder_helper(df, category_columns, target)
+        perform_feature_engineering(df, features, "blabla")
+        logging.error("TEST FAILED: Enoder returned w/o assertion")
+        assert False
+    except AssertionError as err:
+        logging.info("TEST SUCCESSFUL: Parameter not valid.")
+        assert True
+    except Exception as err:
+        logging.error("TEST FAILED: Wrong Exception: %s", err)
+        assert False

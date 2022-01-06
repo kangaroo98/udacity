@@ -22,3 +22,7 @@ class EdaError(AppError):
 class EncodingError(AppError):
     """Base class for other exceptions"""
     pass
+
+class FeatureEngineeringError(AppError):
+    """Base class for other exceptions"""
+    pass
