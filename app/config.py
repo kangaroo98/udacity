@@ -7,6 +7,7 @@ logging.basicConfig(
     filemode='w',
     format='%(name)s - %(levelname)s - %(message)s')
 
+
 category_columns = [
     'Gender',
     'Education_Level',

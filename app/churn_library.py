@@ -2,24 +2,15 @@
 library to determine customer churn based on two models:
 - LogisiticRegression
 - RandomForestClassifier
-
 Functions:
-- import_data(pth)
-- perform_eda(df_eda, pth)
-- encoder_helper(df_encode, category_lst, rel_column)
-- perform_feature_engineering(df_org, feature_name_list, target_column_name)
-- compare_lr_rf_model(
-        target_test,
-        features_test,
-        rfc_model_name,
-        lr_model_name)
-- feature_importance_plot(model, feature_data, output_pth)
-- classification_report_image(model_name,
-                                target_train,
-                                target_test,
-                                train_preds,
-                                test_preds):
-- train_models(train_features, test_features, train_target, test_target)
+- import_data
+- perform_eda
+- encoder_helper
+- perform_feature_engineering
+- compare_roc_image
+- feature_importance_image
+- classification_report_image
+- train_models
 
 Author: Oliver
 Date: 2022 - Jan5
@@ -264,7 +255,7 @@ def compare_roc_image(
     output:
         None
     '''
-    logging.info("INFO: classification report generation")
+    logging.info("INFO: roc comparison image generation")
     image_dir, image_name = os.path.split(image_file_pth)
     assert os.path.isdir(image_dir)
     assert image_name[-4:] == '.png'
@@ -285,6 +276,7 @@ def compare_roc_image(
              ax=axes,
              alpha=0.8)
         plt.savefig(image_file_pth)
+        logging.info("SUCCESS: roc image saved as %s", image_file_pth)
 
     except Exception as err:
         logging.error("ERROR: Comparison roc failed:", err)
@@ -322,7 +314,7 @@ def feature_importance_image(rf_model, feature_data, image_file_pth):
         names = [feature_data.columns[i] for i in indices]
 
         # Create plot
-        plt.figure(figsize=(20, 5))
+        plt.figure(figsize=(20, 20))
 
         # Create plot title
         plt.title("Feature Importance")
@@ -395,7 +387,7 @@ def classification_report_image(
         plt.axis('off')
 
         plt.savefig(image_file_pth)
-        logging.info("SUCCESS: image saved as %s", image_file_pth)
+        logging.info("SUCCESS: classification report image saved as %s", image_file_pth)
 
     except Exception as err:
         logging.error(
