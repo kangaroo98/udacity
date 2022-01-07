@@ -7,9 +7,8 @@ Project **Predict Customer Churn** of ML DevOps Engineer Nanodegree Udacity
 Used the Jupyter Notebook "churn_notebook.ipynb" to build a customer churn library in python.
 Refactored the notebook code and applied clean code principles. Using autopep8, pylint, pytest.
 The project can be accessed in github:
-
-
-In the root folder of the repo you will find the original "churn_notebook.ipynb". In addition you can use "requirements.txt" to view/install the dependencies.
+https://github.com/kangaroo98/udacity.git
+The root folder of the repo contains the original "churn_notebook.ipynb". In addition you can use "requirements.txt" in the root to view/install the dependencies.
 
 The project is currently organized in 5 packages/folders:
 1. app: source code
@@ -25,7 +24,20 @@ The project is currently organized in 5 packages/folders:
 - err_now_rows.csv: for testing purpose
 - err_wrong_file_format.csv: for testing purpose
 4. images: reporting image files created by the library functions
-5. models: current base are two models - LogisticRegression, Rainforest Classifier
+- churn.png: -> perform_eda
+- corr_heatmap.png: -> perform_eda
+- marital_status.png: -> perform_eda
+- customer_age.png: -> perform_eda
+- total_trans_ct.png: -> perform_eda
+- classification_report_lr.png: -> classification_report_image
+- classification_report_rf.png: -> classification_report_image
+- feature_importance.png: -> feature_importance_image
+- roc_curve_comparison.png: -> compare_roc_image
+
+5. models: trained models based on the given bank_data.csv
+- lr_model.pkl: LogisticRegression
+- rf_model.pkl: RandomForestClassifier
+
 
 ## Running Files
 How do you run your files? What should happen when you run your files?
