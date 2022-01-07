@@ -19,6 +19,7 @@ Date: 2022 - Jan7
 import matplotlib
 matplotlib.use('Agg')
 import os
+import joblib
 # Python3.6 
 from sklearn.metrics import classification_report, plot_roc_curve
 # Python3.9 from sklearn.metrics import classification_report, RocCurveDisplay
@@ -26,7 +27,6 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-import joblib
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -128,9 +128,10 @@ def perform_eda(df_eda, image_dir_pth):
             image_dir_pth)
 
         plt.clf()
-        #Python3.6 sns.distplot(df_eda['Total_Trans_Ct'])
-        #Python3.9
-        sns.histplot(df_eda['Total_Trans_Ct'], kde=True, stat="density", linewidth=0)
+        # Python3.6 
+        sns.distplot(df_eda['Total_Trans_Ct'])
+        # Python3.9 
+        # sns.histplot(df_eda['Total_Trans_Ct'], kde=True, stat="density", linewidth=0)
         plt.savefig(image_dir_pth + "total_trans_ct.png")
         logging.info(
             "INFO: total_trans_ct.png image is created in %s",
@@ -269,21 +270,25 @@ def compare_roc_image(
         axes = plt.gca()
         
         # Python 3.6
-        #plot_roc_curve(lr_model, features_test, target_test, ax=axes, alpha=0.8)
-        #plot_roc_curve(rf_model, features_test, target_test, ax=axes, alpha=0.8)
+        plot_roc_curve(
+            lr_model, features_test, 
+            target_test, ax=axes, alpha=0.8)
+        plot_roc_curve(
+            rf_model, features_test, 
+            target_test, ax=axes, alpha=0.8)
         #Python3.9
-        RocCurveDisplay.from_estimator(
-            lr_model,
-            features_test,
-            target_test,
-            ax=axes,
-            alpha=0.8)
-        RocCurveDisplay.from_estimator(
-             rf_model,
-             features_test,
-             target_test,
-             ax=axes,
-             alpha=0.8)
+        # RocCurveDisplay.from_estimator(
+        #     lr_model,
+        #     features_test,
+        #     target_test,
+        #     ax=axes,
+        #     alpha=0.8)
+        # RocCurveDisplay.from_estimator(
+        #      rf_model,
+        #      features_test,
+        #      target_test,
+        #      ax=axes,
+        #      alpha=0.8)
         plt.savefig(image_file_pth)
         logging.info("SUCCESS: roc image saved as %s", image_file_pth)
 
@@ -433,7 +438,7 @@ def train_models(train_features, test_features, train_target, test_target):
     try:
         # grid search
         rfc = RandomForestClassifier(random_state=42)
-        lrc = LogisticRegression()
+        lrc = LogisticRegression(max_iter=1000)
 
         # train models
         cv_rfc = GridSearchCV(estimator=rfc, param_grid=param_grid, cv=5)
@@ -476,15 +481,15 @@ if __name__ == "__main__":
         # feature extraction and model training
         X_train, X_test, y_train, y_test = perform_feature_engineering(
             df, features, target)
-        # lr, rf = train_models(X_train, X_test, y_train, y_test)
-        # joblib.dump(lr, './models/lr_model.pkl')
-        # joblib.dump(rf, './models/rf_model.pkl')
+        lr, rf = train_models(X_train, X_test, y_train, y_test)
+        joblib.dump(lr, './models/lr_model.pkl')
+        joblib.dump(rf, './models/rf_model.pkl')
 
         # generate reports / images
         classification_report_image(
-            joblib.load('./models/lr_model.pkl'),
-            X_train, X_test, y_train, y_test,
-            './images/classification_report_lr.png')
+             joblib.load('./models/lr_model.pkl'),
+             X_train, X_test, y_train, y_test,
+             './images/classification_report_lr.png')
         classification_report_image(
             joblib.load('./models/rf_model.pkl'),
             X_train, X_test, y_train, y_test,
