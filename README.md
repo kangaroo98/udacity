@@ -41,7 +41,7 @@ The project is currently organized in 5 packages/folders:
 
 
 ## Running Files
-After having problems with the provided workspace stability, I decided to develop it locally and share the code in github. My local python version is 3.9.3., but it runs also in your environment based on python 3.6.3. (although some depr.code warnings appear with pytest). Please be aware that currently a relative path to the project root is used throughout the application (inc. loading/saving logs, data, images, models). 
+After having problems with the provided udacity workspace stability, I decided to develop it locally and share the code in github. My local python version is 3.9.3., but it runs also in your environment based on python 3.6.3. (although some depr.code warnings appear with pytest). Please be aware that currently a relative path to the project root is used throughout the application (inc. loading/saving logs, data, images, models). 
 1. git clone https://github.com/kangaroo98/udacity.git
 2. cd udacity
 3. either install missing libraries via the udacity env. or upgrade to 3.9.3 and pip install -r requirements.txt 
