@@ -19,7 +19,9 @@ Date: 2022 - Jan7
 import matplotlib
 matplotlib.use('Agg')
 import os
-from sklearn.metrics import classification_report, RocCurveDisplay
+# Python3.6 
+from sklearn.metrics import classification_report, plot_roc_curve
+# Python3.9 from sklearn.metrics import classification_report, RocCurveDisplay
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -265,6 +267,11 @@ def compare_roc_image(
     try:
         plt.figure(figsize=(20, 10))
         axes = plt.gca()
+        
+        # Python 3.6
+        #plot_roc_curve(lr_model, features_test, target_test, ax=axes, alpha=0.8)
+        #plot_roc_curve(rf_model, features_test, target_test, ax=axes, alpha=0.8)
+        #Python3.9
         RocCurveDisplay.from_estimator(
             lr_model,
             features_test,
