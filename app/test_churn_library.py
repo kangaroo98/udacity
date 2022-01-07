@@ -3,7 +3,7 @@ Pytests for the churn library functions
 Run command: pytest --capture=no --log-cli-level=INFO test_churn_library.py
 
 Author: Oliver
-Date: 2022 - Jan5
+Date: 2022 - Jan7
 '''
 import joblib
 from config import logging
@@ -18,7 +18,7 @@ from churn_library import train_models
 from churn_library import classification_report_image
 from churn_library import feature_importance_image
 from churn_library import compare_roc_image
-#from churn_library import *
+
 
 def test_import_data_filepth():
     '''

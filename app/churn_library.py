@@ -13,7 +13,7 @@ Functions:
 - train_models
 
 Author: Oliver
-Date: 2022 - Jan5
+Date: 2022 - Jan7
 '''
 # import libraries
 import os
@@ -22,14 +22,12 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-#from sklearn.preprocessing import normalize
-#import shap
 import joblib
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from app.error import DfColumnsMismatchError, FileFormatError, FileNoRowsError
+from app.error import AppError, DfColumnsMismatchError, FileFormatError, FileNoRowsError
 from app.error import EdaError, EncodingError, FeatureEngineeringError
 from app.error import ModelTrainingError, ReportingError
 from app.config import features, target, param_grid, category_columns, quantitative_columns
@@ -463,7 +461,6 @@ if __name__ == "__main__":
         # feature extraction and model training
         X_train, X_test, y_train, y_test = perform_feature_engineering(
             df, features, target)
-
         # lr, rf = train_models(X_train, X_test, y_train, y_test)
         # joblib.dump(lr, './../models/lr_model.pkl')
         # joblib.dump(rf, './../models/rf_model.pkl')
@@ -473,22 +470,19 @@ if __name__ == "__main__":
             joblib.load('./../models/lr_model.pkl'),
             X_train, X_test, y_train, y_test,
             './../images/classification_report_lr.png')
-
         classification_report_image(
             joblib.load('./../models/rf_model.pkl'),
             X_train, X_test, y_train, y_test,
             './../images/classification_report_rf.png')
-
         feature_importance_image(
             joblib.load('./../models/rf_model.pkl'),
             X_test,
             './../images/feature_importance.png')
-
         compare_roc_image(
             joblib.load('./../models/lr_model.pkl'),
             joblib.load('./../models/rf_model.pkl'),
             X_test, y_test,
             './../images/roc_curve_comparison.png')
 
-    except Exception as error:
+    except (Exception) as error:
         print("Library error: %s", error)
