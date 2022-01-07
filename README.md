@@ -24,7 +24,7 @@ The project is currently organized in 5 packages/folders:
 - err_missing_columns.csv: for testing purpose
 - err_now_rows.csv: for testing purpose
 - err_wrong_file_format.csv: for testing purpose
-4. images: reporting image files created by the library functions
+4. images: image reports created by the library functions
 - churn.png: -> perform_eda
 - corr_heatmap.png: -> perform_eda
 - marital_status.png: -> perform_eda
