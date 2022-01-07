@@ -16,6 +16,8 @@ Author: Oliver
 Date: 2022 - Jan7
 '''
 # import libraries
+import matplotlib
+matplotlib.use('Agg')
 import os
 from sklearn.metrics import classification_report, RocCurveDisplay
 from sklearn.model_selection import GridSearchCV
@@ -124,6 +126,8 @@ def perform_eda(df_eda, image_dir_pth):
             image_dir_pth)
 
         plt.clf()
+        #Python3.6 sns.distplot(df_eda['Total_Trans_Ct'])
+        #Python3.9
         sns.histplot(df_eda['Total_Trans_Ct'], kde=True, stat="density", linewidth=0)
         plt.savefig(image_dir_pth + "total_trans_ct.png")
         logging.info(
@@ -361,6 +365,10 @@ def classification_report_image(
     image_dir, image_name = os.path.split(image_file_pth)
     assert os.path.isdir(image_dir)
     assert image_name[-4:] == '.png'
+    assert train_features.shape[0] > 0
+    assert test_features.shape[0] > 0
+    assert train_features.shape[0] == train_target.shape[0]
+    assert test_features.shape[0] == test_target.shape[0]
 
     try:
         preds_train = model.predict(train_features)
@@ -410,8 +418,8 @@ def train_models(train_features, test_features, train_target, test_target):
             models: lrc, rfc
     '''
     logging.info("INFO: training models")
-    assert train_features.shape[0] > 1
-    assert test_features.shape[0] > 1
+    assert train_features.shape[0] > 0
+    assert test_features.shape[0] > 0
     assert train_features.shape[0] == train_target.shape[0]
     assert test_features.shape[0] == test_target.shape[0]
 
@@ -454,35 +462,35 @@ if __name__ == "__main__":
 
     try:
         # preparation and analysis
-        df = import_data('./../data/bank_data.csv')
-        perform_eda(df, './../images/')
+        df = import_data('./data/bank_data.csv')
+        perform_eda(df, './images/')
         encoder_helper(df, category_columns, target)
 
         # feature extraction and model training
         X_train, X_test, y_train, y_test = perform_feature_engineering(
             df, features, target)
         # lr, rf = train_models(X_train, X_test, y_train, y_test)
-        # joblib.dump(lr, './../models/lr_model.pkl')
-        # joblib.dump(rf, './../models/rf_model.pkl')
+        # joblib.dump(lr, './models/lr_model.pkl')
+        # joblib.dump(rf, './models/rf_model.pkl')
 
         # generate reports / images
         classification_report_image(
-            joblib.load('./../models/lr_model.pkl'),
+            joblib.load('./models/lr_model.pkl'),
             X_train, X_test, y_train, y_test,
-            './../images/classification_report_lr.png')
+            './images/classification_report_lr.png')
         classification_report_image(
-            joblib.load('./../models/rf_model.pkl'),
+            joblib.load('./models/rf_model.pkl'),
             X_train, X_test, y_train, y_test,
-            './../images/classification_report_rf.png')
+            './images/classification_report_rf.png')
         feature_importance_image(
-            joblib.load('./../models/rf_model.pkl'),
+            joblib.load('./models/rf_model.pkl'),
             X_test,
-            './../images/feature_importance.png')
+            './images/feature_importance.png')
         compare_roc_image(
-            joblib.load('./../models/lr_model.pkl'),
-            joblib.load('./../models/rf_model.pkl'),
+            joblib.load('./models/lr_model.pkl'),
+            joblib.load('./models/rf_model.pkl'),
             X_test, y_test,
-            './../images/roc_curve_comparison.png')
+            './images/roc_curve_comparison.png')
 
     except (Exception) as error:
         print("Library error: %s", error)
