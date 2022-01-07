@@ -47,5 +47,5 @@ How do you run your files? What should happen when you run your files?
 2. git clone https://github.com/kangaroo98/udacity.git
 3. cd udacity
 4. pip install -r requirements.txt
-5. python3 ./app/churn_library.py - (__main__) will execute all functions in order, models and images are created and saved, logs can be viewed in ./logs/churn_library.logs
-6. pytest --capture=no --log-cli-level=INFO ./app/test_churn_library.py - logs will be shown in the console
+5. python ./app/churn_library.py - (__main__) will execute all functions in order, models and images are created and saved, logs can be viewed in ./logs/churn_library.logs
+6. python -m pytest --capture=no --log-cli-level=INFO ./app/test_churn_library.py - logs will be shown in the console
