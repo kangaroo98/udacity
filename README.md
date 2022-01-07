@@ -44,6 +44,8 @@ The project is currently organized in 5 packages/folders:
 How do you run your files? What should happen when you run your files?
 
 1. I recommend to build a virtual ennvironment.
-2. pip install -r requirements.txt
-3. git clone
-
+2. git clone https://github.com/kangaroo98/udacity.git
+3. cd udacity
+4. pip install -r requirements.txt
+5. pytest --capture=no --log-cli-level=INFO ./app/test_churn_library.py - currently 11 tests should pass, logs will be shown in the console
+6. python3 ./app/churn_library.py - (__main__) will execute all functions in order, models and images are created and saved, logs can be viewed in ./logs/churn_library.logs
