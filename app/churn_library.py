@@ -87,7 +87,7 @@ def perform_eda(df_eda, image_dir_pth):
     '''
     perform eda on df and save figures to images folder.
     created images in image_dir_path:
-    churn.png, customer_age.png, marital_status.png, total_trans_ct.png, corr_heatmap.png
+    churn_status.png, customer_age.png, marital_status.png, total_trans_ct.png, columns_corr_heatmap.png
 
     exceptions:
             EdaError: eda re. image(s) creation failed.
@@ -106,8 +106,8 @@ def perform_eda(df_eda, image_dir_pth):
 
         plt.figure(figsize=(20, 10))
         df_eda['Churn'].hist()
-        plt.savefig(image_dir_pth + "churn.png")
-        logging.info("INFO: churn.png image is created in %s", image_dir_pth)
+        plt.savefig(image_dir_pth + "churn_status.png")
+        logging.info("INFO: churn_status.png image is created in %s", image_dir_pth)
 
         plt.clf()
         df_eda['Customer_Age'].hist()
@@ -132,9 +132,9 @@ def perform_eda(df_eda, image_dir_pth):
 
         plt.clf()
         sns.heatmap(df_eda.corr(), annot=False, cmap='Dark2_r', linewidths=2)
-        plt.savefig(image_dir_pth + "corr_heatmap.png")
+        plt.savefig(image_dir_pth + "columns_corr_heatmap.png")
         logging.info(
-            "INFO: corr_heatmap.png image is created in %s",
+            "INFO: columns_corr_heatmap.png image is created in %s",
             image_dir_pth)
 
         logging.info(
