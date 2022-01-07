@@ -43,7 +43,7 @@ The project is currently organized in 5 packages/folders:
 ## Running Files
 How do you run your files? What should happen when you run your files?
 
-1. I recommend to build a virtual ennvironment.
+1. Please be aware that currently a relative path to the project root is used throughout the application (inc. loading/saving logs, data, images, models).
 2. git clone https://github.com/kangaroo98/udacity.git
 3. cd udacity
 4. pip install -r requirements.txt
