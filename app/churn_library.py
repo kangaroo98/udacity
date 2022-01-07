@@ -16,26 +16,27 @@ Author: Oliver
 Date: 2022 - Jan7
 '''
 # import libraries
-import matplotlib
-matplotlib.use('Agg')
 import os
 import joblib
-# Python3.6 
-from sklearn.metrics import classification_report, plot_roc_curve
-# Python3.9 from sklearn.metrics import classification_report, RocCurveDisplay
+import pandas as pd
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+# Python3.6 from sklearn.metrics import classification_report, plot_roc_curve
+# Python3.9
+from sklearn.metrics import classification_report, RocCurveDisplay
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import seaborn as sns
-from app.error import AppError, DfColumnsMismatchError, FileFormatError, FileNoRowsError
+from app.error import DfColumnsMismatchError, FileFormatError, FileNoRowsError
 from app.error import EdaError, EncodingError, FeatureEngineeringError
 from app.error import ModelTrainingError, ReportingError
 from app.config import features, target, param_grid, category_columns, quantitative_columns
 from app.config import logging
+# fixes Qt...display error:
+matplotlib.use('Agg')
 sns.set()
 
 
@@ -91,7 +92,8 @@ def perform_eda(df_eda, image_dir_pth):
     '''
     perform eda on df and save figures to images folder.
     created images in image_dir_path:
-    churn_status.png, customer_age.png, marital_status.png, total_trans_ct.png, columns_corr_heatmap.png
+    churn_status.png, customer_age.png, marital_status.png, total_trans_ct.png,
+    columns_corr_heatmap.png
 
     exceptions:
             EdaError: eda re. image(s) creation failed.
@@ -128,16 +130,17 @@ def perform_eda(df_eda, image_dir_pth):
             image_dir_pth)
 
         plt.clf()
-        # Python3.6 
-        sns.distplot(df_eda['Total_Trans_Ct'])
-        # Python3.9 
-        # sns.histplot(df_eda['Total_Trans_Ct'], kde=True, stat="density", linewidth=0)
+        # Python3.6 sns.distplot(df_eda['Total_Trans_Ct'])
+        # Python3.9
+        sns.histplot(df_eda['Total_Trans_Ct'], kde=True, stat="density", linewidth=0)
         plt.savefig(image_dir_pth + "total_trans_ct.png")
         logging.info(
             "INFO: total_trans_ct.png image is created in %s",
             image_dir_pth)
 
         plt.clf()
+        # fixes python -m pytest warning:
+        plt.rcParams['axes.grid'] = False
         sns.heatmap(df_eda.corr(), annot=False, cmap='Dark2_r', linewidths=2)
         plt.savefig(image_dir_pth + "columns_corr_heatmap.png")
         logging.info(
@@ -268,27 +271,26 @@ def compare_roc_image(
     try:
         plt.figure(figsize=(20, 10))
         axes = plt.gca()
-        
         # Python 3.6
-        plot_roc_curve(
-            lr_model, features_test, 
-            target_test, ax=axes, alpha=0.8)
-        plot_roc_curve(
-            rf_model, features_test, 
-            target_test, ax=axes, alpha=0.8)
+        # plot_roc_curve(
+        #     lr_model, features_test,
+        #     target_test, ax=axes, alpha=0.8)
+        # plot_roc_curve(
+        #     rf_model, features_test,
+        #     target_test, ax=axes, alpha=0.8)
         #Python3.9
-        # RocCurveDisplay.from_estimator(
-        #     lr_model,
-        #     features_test,
-        #     target_test,
-        #     ax=axes,
-        #     alpha=0.8)
-        # RocCurveDisplay.from_estimator(
-        #      rf_model,
-        #      features_test,
-        #      target_test,
-        #      ax=axes,
-        #      alpha=0.8)
+        RocCurveDisplay.from_estimator(
+            lr_model,
+            features_test,
+            target_test,
+            ax=axes,
+            alpha=0.8)
+        RocCurveDisplay.from_estimator(
+             rf_model,
+             features_test,
+             target_test,
+             ax=axes,
+             alpha=0.8)
         plt.savefig(image_file_pth)
         logging.info("SUCCESS: roc image saved as %s", image_file_pth)
 
@@ -481,9 +483,9 @@ if __name__ == "__main__":
         # feature extraction and model training
         X_train, X_test, y_train, y_test = perform_feature_engineering(
             df, features, target)
-        lr, rf = train_models(X_train, X_test, y_train, y_test)
-        joblib.dump(lr, './models/lr_model.pkl')
-        joblib.dump(rf, './models/rf_model.pkl')
+        # lr, rf = train_models(X_train, X_test, y_train, y_test)
+        # joblib.dump(lr, './models/lr_model.pkl')
+        # joblib.dump(rf, './models/rf_model.pkl')
 
         # generate reports / images
         classification_report_image(
