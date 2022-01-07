@@ -14,7 +14,7 @@ In the root folder of the repo you will find the original "churn_notebook.ipynb"
 The project is currently organized in 5 packages/folders:
 1. app: source code
 - churn_library.py: customer churn library functions
-- test_churn_library.py: customer churn test functions (using pytest) 
+- test_churn_library.py: customer churn library test functions (using pytest) 
 - config.py: logging configuration and app lib constants 
 - error.py: app lib exception definitions
 2. logs: customer churn library functions logs, test logging is done directly in the console (see running files below)
