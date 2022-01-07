@@ -16,8 +16,8 @@ The project is currently organized in 5 packages/folders:
 - churn_library.py: customer churn library functions
 - test_churn_library.py: customer churn test functions (using pytest) 
 - config.py: logging configuration and app lib constants 
-- error.py: app lib exception defintions
-2. logs: customer churn library functions log file, test logging is done directly in the console (see running files below)
+- error.py: app lib exception definitions
+2. logs: customer churn library functions logs, test logging is done directly in the console (see running files below)
 - churn_library.log: log file with infos and errors 
 3. data: 
 - bank_data.csv: original customer data file 
