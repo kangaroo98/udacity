@@ -7,37 +7,28 @@ Date: 2022 - Jan7
 
 # define user-defined exceptions
 class AppError(Exception):
-    """Base class for other exceptions"""
-    pass
+    ''' base class for app exceptions '''
 
 class FileFormatError(AppError):
-    """Base class for other exceptions"""
-    pass
+    ''' csv file format exception '''
 
 class DfColumnsMismatchError(AppError):
-    """Base class for other exceptions"""
-    pass
+    ''' dataframe does not contain mandatory columns exception '''
 
 class FileNoRowsError(AppError):
-    """Base class for other exceptions"""
-    pass
+    ''' Base class for other exception '''
 
 class EdaError(AppError):
-    """Base class for other exceptions"""
-    pass
+    ''' perform eda exception '''
 
 class EncodingError(AppError):
-    """Base class for other exceptions"""
-    pass
+    ''' data frame encoding exception '''
 
 class FeatureEngineeringError(AppError):
-    """Base class for other exceptions"""
-    pass
+    ''' train/test data engineering exception '''
 
 class ModelTrainingError(AppError):
-    """Base class for other exceptions"""
-    pass
+    ''' model training exception '''
 
 class ReportingError(AppError):
-    """Base class for other exceptions"""
-    pass
+    ''' reporting excdeption '''

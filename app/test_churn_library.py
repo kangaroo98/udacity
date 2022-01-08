@@ -7,7 +7,7 @@ Date: 2022 - Jan7
 '''
 import joblib
 from app.config import logging
-from app.config import category_columns, features, target
+from app.config import category_columns, features, TARGET
 from app.error import AppError
 from app.error import DfColumnsMismatchError, FileFormatError, FileNoRowsError
 from app.churn_library import import_data
@@ -128,7 +128,7 @@ def test_perform_feature_engineering_path():
     try:
         df_engineering = import_data("./data/bank_data.csv")
         perform_eda(df_engineering, "./images/")
-        encoder_helper(df_engineering, category_columns, target)
+        encoder_helper(df_engineering, category_columns, TARGET)
         perform_feature_engineering(df_engineering, features, "blabla")
         logging.error("TEST FAILED: Enoder returned w/o assertion")
         assert False
@@ -147,9 +147,9 @@ def test_train_models_feature_target_data_match():
     try:
         df_train = import_data("./data/bank_data.csv")
         perform_eda(df_train, "./images/")
-        encoder_helper(df_train, category_columns, target)
+        encoder_helper(df_train, category_columns, TARGET)
         x_train, x_test, y_train, y_test = perform_feature_engineering(
-            df_train, features, target)
+            df_train, features, TARGET)
 
         # training with incorrect train re test data call
         train_models(x_train, x_test, y_test, y_train)
@@ -171,11 +171,11 @@ def test_classification_report_image_path1():
     try:
         df_class = import_data('./data/bank_data.csv')
         perform_eda(df_class, './images/')
-        encoder_helper(df_class, category_columns, target)
+        encoder_helper(df_class, category_columns, TARGET)
 
         # feature extraction and model training
         x_train, x_test, y_train, y_test = perform_feature_engineering(
-            df_class, features, target)
+            df_class, features, TARGET)
 
         # classification report test with incorrect file extension
         classification_report_image(
@@ -201,11 +201,11 @@ def test_classification_report_image_path2():
     try:
         df_class = import_data('./data/bank_data.csv')
         perform_eda(df_class, './images/')
-        encoder_helper(df_class, category_columns, target)
+        encoder_helper(df_class, category_columns, TARGET)
 
         # feature extraction and model training
         x_train, x_test, y_train, y_test = perform_feature_engineering(
-            df_class, features, target)
+            df_class, features, TARGET)
 
         # classification report test with missing image dir path
         classification_report_image(
@@ -230,11 +230,11 @@ def test_classification_report_image_path3():
     try:
         df_class = import_data('./data/bank_data.csv')
         perform_eda(df_class, './images/')
-        encoder_helper(df_class, category_columns, target)
+        encoder_helper(df_class, category_columns, TARGET)
 
         # feature extraction and model training
         x_train, x_test, y_train, y_test = perform_feature_engineering(
-            df_class, features, target)
+            df_class, features, TARGET)
 
         # classification report test with wrong path
         classification_report_image(
@@ -259,11 +259,11 @@ def test_feature_importance_image_1():
     try:
         df_imp = import_data('./data/bank_data.csv')
         perform_eda(df_imp, './images/')
-        encoder_helper(df_imp, category_columns, target)
+        encoder_helper(df_imp, category_columns, TARGET)
 
         # feature extraction and model training
         x_train, x_test, y_train, y_test = perform_feature_engineering(
-            df_imp, features, target)
+            df_imp, features, TARGET)
 
         # image generation test with wrong image file extension
         feature_importance_image(
@@ -289,11 +289,11 @@ def test_compare_roc_image_1():
     try:
         df_roc = import_data('./data/bank_data.csv')
         perform_eda(df_roc, './images/')
-        encoder_helper(df_roc, category_columns, target)
+        encoder_helper(df_roc, category_columns, TARGET)
 
         # feature extraction and model training
         x_train, x_test, y_train, y_test = perform_feature_engineering(
-            df_roc, features, target)
+            df_roc, features, TARGET)
 
         # image generation test with wrong image file extension
         compare_roc_image(

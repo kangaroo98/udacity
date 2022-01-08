@@ -20,7 +20,7 @@ import os
 import joblib
 import pandas as pd
 import numpy as np
-# Python3.6 
+# Python3.6
 from sklearn.metrics import classification_report, plot_roc_curve
 # Python3.9 from sklearn.metrics import classification_report, RocCurveDisplay
 from sklearn.model_selection import GridSearchCV
@@ -30,7 +30,7 @@ from sklearn.model_selection import train_test_split
 from app.error import DfColumnsMismatchError, FileFormatError, FileNoRowsError
 from app.error import EdaError, EncodingError, FeatureEngineeringError
 from app.error import ModelTrainingError, ReportingError
-from app.config import features, target, param_grid, category_columns, quantitative_columns
+from app.config import features, param_grid, category_columns, quantitative_columns, TARGET
 from app.config import logging
 import matplotlib
 # fixes Qt...display error in the udacity workspace, needs to be in this order of imports:
@@ -131,7 +131,7 @@ def perform_eda(df_eda, image_dir_pth):
             image_dir_pth)
 
         plt.clf()
-        # Python3.6 
+        # Python3.6
         sns.distplot(df_eda['Total_Trans_Ct'])
         # Python3.9 sns.histplot(df_eda['Total_Trans_Ct'], kde=True, stat="density", linewidth=0)
         plt.savefig(image_dir_pth + "total_trans_ct.png")
@@ -483,7 +483,7 @@ if __name__ == "__main__":
         # preparation and analysis
         df = import_data('./data/bank_data.csv')
         perform_eda(df, './images/')
-        encoder_helper(df, category_columns, target)
+        encoder_helper(df, category_columns, TARGET)
 
         # feature extraction and model training
         X_train, X_test, y_train, y_test = perform_feature_engineering(
