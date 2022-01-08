@@ -19,8 +19,8 @@ The project is currently organized in 5 packages/folders:
 - error.py: app lib exception definitions
 2. logs: customer churn library functions logs, test logging is done directly in the console (see running files below)
 - churn_library.log: log file with infos and errors 
-3. data: 
-- bank_data.csv: original customer data file 
+3. data: customer data
+- bank_data.csv: original file 
 - err_missing_columns.csv: for testing purpose
 - err_now_rows.csv: for testing purpose
 - err_wrong_file_format.csv: for testing purpose
