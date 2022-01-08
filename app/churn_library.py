@@ -20,8 +20,6 @@ import os
 import joblib
 import pandas as pd
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
 # Python3.6 from sklearn.metrics import classification_report, plot_roc_curve
 # Python3.9
 from sklearn.metrics import classification_report, RocCurveDisplay
@@ -29,14 +27,16 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-import seaborn as sns
 from app.error import DfColumnsMismatchError, FileFormatError, FileNoRowsError
 from app.error import EdaError, EncodingError, FeatureEngineeringError
 from app.error import ModelTrainingError, ReportingError
 from app.config import features, target, param_grid, category_columns, quantitative_columns
 from app.config import logging
-# fixes Qt...display error:
+import matplotlib
+# fixes Qt...display error in the udacity workspace, needs to be in this order of imports:
 matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import seaborn as sns
 sns.set()
 
 
@@ -105,6 +105,7 @@ def perform_eda(df_eda, image_dir_pth):
     '''
     logging.info("INFO: performing eda")
     assert os.path.isdir(image_dir_pth)
+    assert df_eda.shape[0] > 1
 
     try:
         df_eda['Churn'] = df_eda['Attrition_Flag'].apply(
@@ -180,6 +181,7 @@ def encoder_helper(df_encode, category_lst, rel_column):
         category_lst,
         rel_column)
     assert set(category_lst + [rel_column]).issubset(set(df_encode.columns))
+    assert df_encode.shape[0] > 1
 
     try:
         # encoding category columns
@@ -267,6 +269,8 @@ def compare_roc_image(
     image_dir, image_name = os.path.split(image_file_pth)
     assert os.path.isdir(image_dir)
     assert image_name[-4:] == '.png'
+    assert features_test.shape[0] > 1
+    assert features_test.shape[0] == target_test.shape[0]
 
     try:
         plt.figure(figsize=(20, 10))
@@ -318,6 +322,7 @@ def feature_importance_image(rf_model, feature_data, image_file_pth):
     image_dir, image_name = os.path.split(image_file_pth)
     assert os.path.isdir(image_dir)
     assert image_name[-4:] == '.png'
+    assert feature_data.shape[0] > 1
 
     try:
 
@@ -379,8 +384,8 @@ def classification_report_image(
     image_dir, image_name = os.path.split(image_file_pth)
     assert os.path.isdir(image_dir)
     assert image_name[-4:] == '.png'
-    assert train_features.shape[0] > 0
-    assert test_features.shape[0] > 0
+    assert train_features.shape[0] > 1
+    assert test_features.shape[0] > 1
     assert train_features.shape[0] == train_target.shape[0]
     assert test_features.shape[0] == test_target.shape[0]
 
@@ -432,8 +437,8 @@ def train_models(train_features, test_features, train_target, test_target):
             models: lrc, rfc
     '''
     logging.info("INFO: training models")
-    assert train_features.shape[0] > 0
-    assert test_features.shape[0] > 0
+    assert train_features.shape[0] > 1
+    assert test_features.shape[0] > 1
     assert train_features.shape[0] == train_target.shape[0]
     assert test_features.shape[0] == test_target.shape[0]
 
@@ -483,9 +488,9 @@ if __name__ == "__main__":
         # feature extraction and model training
         X_train, X_test, y_train, y_test = perform_feature_engineering(
             df, features, target)
-        # lr, rf = train_models(X_train, X_test, y_train, y_test)
-        # joblib.dump(lr, './models/lr_model.pkl')
-        # joblib.dump(rf, './models/rf_model.pkl')
+        lr, rf = train_models(X_train, X_test, y_train, y_test)
+        joblib.dump(lr, './models/lr_model.pkl')
+        joblib.dump(rf, './models/rf_model.pkl')
 
         # generate reports / images
         classification_report_image(

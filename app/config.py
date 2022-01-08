@@ -1,10 +1,16 @@
+'''
+Basic configuration of logging env. and app constants
+
+Author: Oliver
+Date: 2022 - Jan7
+'''
+
 import logging
 logging.basicConfig(
     filename='./logs/churn_library.log',
     level = logging.INFO,
     filemode='w',
     format='%(name)s - %(levelname)s - %(message)s')
-
 
 category_columns = [
     'Gender',
@@ -31,8 +37,6 @@ quantitative_columns = [
     'Avg_Utilization_Ratio'
 ]
 
-target = 'Churn'
-
 features = ['Customer_Age', 'Dependent_count', 'Months_on_book',
              'Total_Relationship_Count', 'Months_Inactive_12_mon',
              'Contacts_Count_12_mon', 'Credit_Limit', 'Total_Revolving_Bal',
@@ -40,6 +44,8 @@ features = ['Customer_Age', 'Dependent_count', 'Months_on_book',
              'Total_Trans_Ct', 'Total_Ct_Chng_Q4_Q1', 'Avg_Utilization_Ratio',
              'Gender_Churn', 'Education_Level_Churn', 'Marital_Status_Churn', 
              'Income_Category_Churn', 'Card_Category_Churn']
+
+target = 'Churn'
 
 param_grid = { 
     'n_estimators': [200, 500],

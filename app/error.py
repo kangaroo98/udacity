@@ -1,3 +1,10 @@
+'''
+Exception Handling - Definition
+
+Author: Oliver
+Date: 2022 - Jan7
+'''
+
 # define user-defined exceptions
 class AppError(Exception):
     """Base class for other exceptions"""

@@ -1,0 +1,67 @@
+root - INFO - INFO: Importing file: (./data/bank_data.csv)
+root - INFO - SUCCESS: File imported, dataframe created containing 10127 rows.
+root - INFO - INFO: performing eda
+root - INFO - INFO: churn_status.png image is created in ./images/
+root - INFO - INFO: customer_age.png image is created in ./images/
+root - INFO - INFO: marital_status.png image is created in ./images/
+root - INFO - INFO: total_trans_ct.png image is created in ./images/
+root - INFO - INFO: columns_corr_heatmap.png image is created in ./images/
+root - INFO - SUCCESS: all eda images are created in ./images/
+root - INFO - INFO: encoding category list: ['Gender', 'Education_Level', 'Marital_Status', 'Income_Category', 'Card_Category'] with related column: Churn
+root - INFO - SUCCESS: Added new category encoded column (Gender_Churn)
+root - INFO - SUCCESS: Added new category encoded column (Education_Level_Churn)
+root - INFO - SUCCESS: Added new category encoded column (Marital_Status_Churn)
+root - INFO - SUCCESS: Added new category encoded column (Income_Category_Churn)
+root - INFO - SUCCESS: Added new category encoded column (Card_Category_Churn)
+root - INFO - INFO: Preparing train and test data - features: ['Customer_Age', 'Dependent_count', 'Months_on_book', 'Total_Relationship_Count', 'Months_Inactive_12_mon', 'Contacts_Count_12_mon', 'Credit_Limit', 'Total_Revolving_Bal', 'Avg_Open_To_Buy', 'Total_Amt_Chng_Q4_Q1', 'Total_Trans_Amt', 'Total_Trans_Ct', 'Total_Ct_Chng_Q4_Q1', 'Avg_Utilization_Ratio', 'Gender_Churn', 'Education_Level_Churn', 'Marital_Status_Churn', 'Income_Category_Churn', 'Card_Category_Churn'] and target: Churn
+root - INFO - INFO: training models
+root - INFO - INFO: random forest results
+root - INFO - INFO: test results
+root - INFO -               precision    recall  f1-score   support
+
+           0       0.96      0.99      0.98      2543
+           1       0.93      0.80      0.86       496
+
+    accuracy                           0.96      3039
+   macro avg       0.95      0.90      0.92      3039
+weighted avg       0.96      0.96      0.96      3039
+
+root - INFO - INFO: train results
+root - INFO -               precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00      5957
+           1       1.00      1.00      1.00      1131
+
+    accuracy                           1.00      7088
+   macro avg       1.00      1.00      1.00      7088
+weighted avg       1.00      1.00      1.00      7088
+
+root - INFO - INFO: logistic regression results
+root - INFO - INFO: test results
+root - INFO -               precision    recall  f1-score   support
+
+           0       0.90      0.97      0.93      2543
+           1       0.72      0.44      0.54       496
+
+    accuracy                           0.88      3039
+   macro avg       0.81      0.70      0.74      3039
+weighted avg       0.87      0.88      0.87      3039
+
+root - INFO - INFO: train results
+root - INFO -               precision    recall  f1-score   support
+
+           0       0.91      0.96      0.94      5957
+           1       0.73      0.50      0.59      1131
+
+    accuracy                           0.89      7088
+   macro avg       0.82      0.73      0.76      7088
+weighted avg       0.88      0.89      0.88      7088
+
+root - INFO - INFO: classification report generation
+root - INFO - SUCCESS: classification report image saved as ./images/classification_report_lr.png
+root - INFO - INFO: classification report generation
+root - INFO - SUCCESS: classification report image saved as ./images/classification_report_rf.png
+root - INFO - INFO: feature importance plot generation
+root - INFO - SUCCESS: image saved as ./images/feature_importance.png
+root - INFO - INFO: roc comparison image generation
+root - INFO - SUCCESS: roc image saved as ./images/roc_curve_comparison.png

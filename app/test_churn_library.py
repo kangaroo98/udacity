@@ -45,7 +45,7 @@ def test_import_data_fileformat():
         import_data("./data/err_wrong_file_format.csv")
         logging.error("TEST FAILED: Dataframe returned w/o expection")
         assert False
-    except FileFormatError as err:
+    except FileFormatError:
         logging.info("TEST SUCCESSFUL: Filepath does not exist.")
         assert True
     except AppError as err:
@@ -113,7 +113,7 @@ def test_encoder_helper_dfparameter():
         encoder_helper(df_encode, category_columns, "blabla")
         logging.error("TEST FAILED: Enoder returned w/o assertion")
         assert False
-    except AssertionError as err:
+    except AssertionError:
         logging.info("TEST SUCCESSFUL: Parameter not valid.")
         assert True
     except AppError as err:
@@ -132,7 +132,7 @@ def test_perform_feature_engineering_path():
         perform_feature_engineering(df_engineering, features, "blabla")
         logging.error("TEST FAILED: Enoder returned w/o assertion")
         assert False
-    except AssertionError as err:
+    except AssertionError:
         logging.info("TEST SUCCESSFUL: Parameter not valid.")
         assert True
     except AppError as err:
@@ -150,12 +150,12 @@ def test_train_models_feature_target_data_match():
         encoder_helper(df_train, category_columns, target)
         x_train, x_test, y_train, y_test = perform_feature_engineering(
             df_train, features, target)
-        
+
         # training with incorrect train re test data call
         train_models(x_train, x_test, y_test, y_train)
         logging.error("TEST FAILED: Enoder returned w/o assertion")
         assert False
-    except AssertionError as err:
+    except AssertionError:
         logging.info("TEST SUCCESSFUL: Parameter not valid.")
         assert True
     except AppError as err:
@@ -185,7 +185,7 @@ def test_classification_report_image_path1():
 
         logging.error("TEST FAILED: classification returned w/o assertion")
         assert False
-    except AssertionError as err:
+    except AssertionError:
         logging.info("TEST SUCCESSFUL: Parameter not valid.")
         assert True
     except AppError as err:
@@ -215,7 +215,7 @@ def test_classification_report_image_path2():
 
         logging.error("TEST FAILED: classification returned w/o assertion")
         assert False
-    except AssertionError as err:
+    except AssertionError:
         logging.info("TEST SUCCESSFUL: Parameter not valid.")
         assert True
     except AppError as err:
@@ -241,10 +241,10 @@ def test_classification_report_image_path3():
             joblib.load('./models/lr_model.pkl'),
             x_train, x_test, y_train, y_test,
             'blabla')
-        
+
         logging.error("TEST FAILED: classification returned w/o assertion")
         assert False
-    except AssertionError as err:
+    except AssertionError:
         logging.info("TEST SUCCESSFUL: Parameter not valid.")
         assert True
     except AppError as err:
@@ -274,7 +274,7 @@ def test_feature_importance_image_1():
 
         logging.error("TEST FAILED: classification returned w/o assertion")
         assert False
-    except AssertionError as err:
+    except AssertionError:
         logging.info("TEST SUCCESSFUL: Parameter not valid.")
         assert True
     except AppError as err:
@@ -305,7 +305,7 @@ def test_compare_roc_image_1():
 
         logging.error("TEST FAILED: classification returned w/o assertion")
         assert False
-    except AssertionError as err:
+    except AssertionError:
         logging.info("TEST SUCCESSFUL: Parameter not valid.")
         assert True
     except AppError as err:
