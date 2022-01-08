@@ -20,9 +20,9 @@ import os
 import joblib
 import pandas as pd
 import numpy as np
-# Python3.6 from sklearn.metrics import classification_report, plot_roc_curve
-# Python3.9
-from sklearn.metrics import classification_report, RocCurveDisplay
+# Python3.6 
+from sklearn.metrics import classification_report, plot_roc_curve
+# Python3.9 from sklearn.metrics import classification_report, RocCurveDisplay
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
@@ -131,9 +131,9 @@ def perform_eda(df_eda, image_dir_pth):
             image_dir_pth)
 
         plt.clf()
-        # Python3.6 sns.distplot(df_eda['Total_Trans_Ct'])
-        # Python3.9
-        sns.histplot(df_eda['Total_Trans_Ct'], kde=True, stat="density", linewidth=0)
+        # Python3.6 
+        sns.distplot(df_eda['Total_Trans_Ct'])
+        # Python3.9 sns.histplot(df_eda['Total_Trans_Ct'], kde=True, stat="density", linewidth=0)
         plt.savefig(image_dir_pth + "total_trans_ct.png")
         logging.info(
             "INFO: total_trans_ct.png image is created in %s",
@@ -276,25 +276,25 @@ def compare_roc_image(
         plt.figure(figsize=(20, 10))
         axes = plt.gca()
         # Python 3.6
-        # plot_roc_curve(
-        #     lr_model, features_test,
-        #     target_test, ax=axes, alpha=0.8)
-        # plot_roc_curve(
-        #     rf_model, features_test,
-        #     target_test, ax=axes, alpha=0.8)
+        plot_roc_curve(
+            lr_model, features_test,
+            target_test, ax=axes, alpha=0.8)
+        plot_roc_curve(
+            rf_model, features_test,
+            target_test, ax=axes, alpha=0.8)
         #Python3.9
-        RocCurveDisplay.from_estimator(
-            lr_model,
-            features_test,
-            target_test,
-            ax=axes,
-            alpha=0.8)
-        RocCurveDisplay.from_estimator(
-             rf_model,
-             features_test,
-             target_test,
-             ax=axes,
-             alpha=0.8)
+        #RocCurveDisplay.from_estimator(
+        #    lr_model,
+        #    features_test,
+        #    target_test,
+        #    ax=axes,
+        #    alpha=0.8)
+        #RocCurveDisplay.from_estimator(
+        #     rf_model,
+        #     features_test,
+        #     target_test,
+        #     ax=axes,
+        #     alpha=0.8)
         plt.savefig(image_file_pth)
         logging.info("SUCCESS: roc image saved as %s", image_file_pth)
 
