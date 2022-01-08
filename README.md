@@ -41,10 +41,10 @@ The project is currently organized in 5 packages/folders:
 
 
 ## Running Files
-After having problems with the provided udacity workspace stability, I decided to develop it locally and share the code in github. My local python version is 3.9.3., but it runs also in the udacity workspace based on python 3.6.3. (although some depr.code warnings appear with pytest). Please be aware that currently a relative path to the project root is used throughout the application (inc. loading/saving logs, data, images, models). 
-1. get branch udacity_workspace frotm git repo https://github.com/kangaroo98/udacity.git 
+After having problems with the provided udacity workspace stability, I decided to develop it locally and share the code in github. My local python version is 3.9.3., but it runs also in the udacity workspace based on python 3.6.3. with minor changes. Please be aware that currently a relative path to the project root is used throughout the application (inc. loading/saving logs, data, images, models). 
+1. get branch udacity_workspace from git repo (already available in the workspace)
 2. cd udacity
-3. either install missing libraries via the udacity env. "button" or upgrade to 3.9.3 and pip install -r requirements.txt (which is a kind of waste in this short lived env. ;-)
+3. install missing libraries via the udacity env. "button" 
 4. python ./app/churn_library.py - (__main__) will execute all functions in order, models and images are created and saved, logs can be viewed in ./logs/churn_library.logs
-5. python -m pytest --capture=no --log-cli-level=INFO ./app/test_churn_library.py - logs will be shown in the console
+5. python -m pytest --capture=no --log-cli-level=INFO ./app/test_churn_library.py - test run, logs will be shown in the console
 6. pylint result for churn_library.py and test_churn_library.py > 8
