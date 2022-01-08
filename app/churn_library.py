@@ -32,8 +32,8 @@ from app.error import EdaError, EncodingError, FeatureEngineeringError
 from app.error import ModelTrainingError, ReportingError
 from app.config import features, param_grid, category_columns, quantitative_columns, TARGET
 from app.config import logging
+# fixes QXcbConnection and QFontDatabase... error in the udacity workspace, needs to be in this order of imports:
 import matplotlib
-# fixes Qt...display error in the udacity workspace, needs to be in this order of imports:
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -487,10 +487,10 @@ if __name__ == "__main__":
 
         # feature extraction and model training
         X_train, X_test, y_train, y_test = perform_feature_engineering(
-            df, features, target)
-        lr, rf = train_models(X_train, X_test, y_train, y_test)
-        joblib.dump(lr, './models/lr_model.pkl')
-        joblib.dump(rf, './models/rf_model.pkl')
+            df, features, TARGET)
+        #lr, rf = train_models(X_train, X_test, y_train, y_test)
+        #joblib.dump(lr, './models/lr_model.pkl')
+        #joblib.dump(rf, './models/rf_model.pkl')
 
         # generate reports / images
         classification_report_image(
