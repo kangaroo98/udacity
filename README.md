@@ -4,8 +4,8 @@ Project **Predict Customer Churn** of ML DevOps Engineer Nanodegree Udacity
 
 
 ## Project Description
-Used the Jupyter Notebook "churn_notebook.ipynb" to build a customer churn library in python.
-Refactored the notebook code and applied clean code principles. Using autopep8, pylint, pytest.
+Used the jupyter notebook "churn_notebook.ipynb" to build a customer churn library in python.
+Refactored the notebook code and applied clean code principles using autopep8, pylint, pytest.
 The project can be accessed in github:
 https://github.com/kangaroo98/udacity.git.
 
